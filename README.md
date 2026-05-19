@@ -9,9 +9,6 @@ preview: https://hackanonymousteam.github.io/Luajava-creator-layout-game-guardia
 [![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue?logo=github)](https://pages.github.com)
 [![Made with Love](https://img.shields.io/badge/Made%20with-%E2%9D%A4%EF%B8%8F-red)](https://github.com)
 
-<p align="center">
-  <img src="https://via.placeholder.com/800x450/0d1117/c9d1d9?text=LuaJava+Layout+Creator+Pro" alt="LuaJava Layout Creator Pro Screenshot" />
-</p>
 
 ## 📖 Overview
 
@@ -42,12 +39,3 @@ With an intuitive visual interface, you can customize every aspect of your scrip
 ### 💾 **Export & Import**
 - **Download .lua Scripts**: Generate complete, ready-to-use LuaJava scripts
 - **Copy to Clipboard**: Quick copy for immediate pasting
-- **Export Settings**: Save your configuration as JSON for backup
-- **Import Settings**: Restore previous configurations instantly
-- **Keyboard Shortcuts**: `Ctrl+S` to download, `Ctrl+C` to copy code
-
-### 🌐 **Browser Features**
-- **No Installation Required**: Works entirely in the browser
-- **Responsive Design**: Adapts to desktop, tablet, and mobile screens
-- **Persistent Layout**: Organized tabs keep settings accessible without scrolling overload
-- **Toast Notifications**: Visual feedback for all actions
