@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuaJava Layout Creator Pro - Game Guardian</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --accent-hover: #79c0ff;
+            --success: #3fb950;
+            --danger: #f85149;
+            --warning: #d2991d;
+            --purple: #a371f7;
+            --pink: #db61a2;
+            --orange: #f0883e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
+        }
+
+        .header {
+            background: linear-gradient(180deg, #1c2333 0%, #161b22 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--purple), var(--pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradientShift {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: #21262d;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        .btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(88, 166, 255, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #238636, #2ea043);
+            border-color: #2ea043;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2ea043, #3fb950);
+            border-color: #3fb950;
+            box-shadow: 0 4px 12px rgba(63, 185, 80, 0.3);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, #1f6feb, #388bfd);
+            border-color: #388bfd;
+            color: #fff;
+        }
+
+        .btn-accent:hover {
+            background: linear-gradient(135deg, #388bfd, #58a6ff);
+            border-color: #58a6ff;
+            box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: transparent;
+            border-color: #f85149;
+            color: #f85149;
+        }
+
+        .btn-danger:hover {
+            background: #f85149;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(248, 81, 73, 0.3);
+        }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 11px;
+            border-radius: 4px;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 380px 1fr 400px;
+            gap: 16px;
+            padding: 16px;
+            height: calc(100vh - 65px);
+        }
+
+        @media (max-width: 1400px) {
+            .main-container {
+                grid-template-columns: 340px 1fr 340px;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+                height: auto;
+            }
+            .preview-panel,
+            .output-panel {
+                height: 900px;
+            }
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .panel-body {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .panel-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .panel-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .panel-body::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+            background: #0d1117;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+            font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+        }
+
+        .form-group input[type="range"] {
+            padding: 0;
+            height: 6px;
+            background: #30363d;
+            border: none;
+            border-radius: 3px;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(88, 166, 255, 0.4);
+            transition: all 0.2s;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 12px rgba(88, 166, 255, 0.6);
+        }
+
+        .color-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .color-input-group input[type="color"] {
+            width: 42px;
+            height: 38px;
+            padding: 2px;
+            cursor: pointer;
+            border-radius: 6px;
+            border: 2px solid var(--border);
+            background: transparent;
+            transition: all 0.2s;
+        }
+
+        .color-input-group input[type="color"]:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+        }
+
+        .color-input-group input[type="text"] {
+            flex: 1;
+            font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .switch-row span {
+            font-size: 13px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #3a3a3c;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        input:checked+.toggle-slider {
+            background: #34c759;
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .preview-panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .preview-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #000 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.005) 2px,
+                    rgba(255, 255, 255, 0.005) 4px);
+            pointer-events: none;
+        }
+
+        .preview-frame {
+            width: 85%;
+            height: 55%;
+            background: #1a1a2e;
+            border-radius: 24px;
+            border: 2px solid #0f3460;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .preview-title {
+            color: #e0e0e0;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .preview-subtitle {
+            color: #a0a0a0;
+            font-size: 11px;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .preview-card {
+            flex: 1;
+            width: 100%;
+            background: #16213e;
+            border-radius: 16px;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .preview-switch-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            color: #e0e0e0;
+            font-size: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .preview-switch-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .preview-switch-track {
+            width: 44px;
+            height: 24px;
+            border-radius: 12px;
+            background: #3a3a3c;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .preview-switch-track.active {
+            background: #34c759;
+            box-shadow: 0 0 12px rgba(52, 199, 89, 0.4);
+        }
+
+        .preview-switch-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview-switch-track.active .preview-switch-thumb {
+            left: 22px;
+        }
+
+        .preview-btn {
+            margin-top: 12px;
+            padding: 10px 28px;
+            border-radius: 100px;
+            background: #0f3460;
+            color: #e0e0e0;
+            font-size: 12px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            align-self: center;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-btn:hover {
+            filter: brightness(1.2);
+        }
+
+        .output-panel .panel-body {
+            padding: 0;
+        }
+
+        #outputCode {
+            width: 100%;
+            height: 100%;
+            background: #0d1117;
+            color: #c9d1d9;
+            border: none;
+            padding: 16px;
+            font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            resize: none;
+            tab-size: 2;
+        }
+
+        #outputCode:focus {
+            outline: none;
+        }
+
+        .function-item {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .function-item:hover {
+            border-color: #484f58;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .function-item .func-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .function-item .func-name {
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            background: #1f6feb;
+            color: #fff;
+        }
+
+        .badge-success {
+            background: #238636;
+        }
+
+        .badge-warning {
+            background: #9e6a03;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, #238636, #2ea043);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
+            animation: slideInToast 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                fadeOutToast 0.3s ease 1.7s forwards;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @keyframes slideInToast {
+            from {
+                transform: translateX(100px) scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOutToast {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .section-divider {
+            border-top: 1px solid var(--border);
+            margin: 16px 0;
+            padding-top: 12px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-btn:hover {
+            color: var(--text);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .input-with-unit {
+            position: relative;
+        }
+
+        .input-with-unit input {
+            padding-right: 40px;
+        }
+
+        .input-with-unit .unit {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1c2333;
+            color: #c9d1d9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 10;
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-accent" onclick="copyCode()">
+                📋 Copy Code
+            </button>
+            <button class="btn btn-primary" onclick="downloadScript()">
+                💾 Download .lua
+            </button>
+            
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Painel de Configurações -->
+        <div class="panel" style="grid-row: span 1;">
+            <div class="panel-header">
+                <span>⚙️</span> Layout Settings
+            </div>
+            <div class="panel-body" id="settingsPanel">
+                <!-- Tabs -->
+                <div class="tab-nav">
+                    <button class="tab-btn active" onclick="switchTab('general')">📝 General</button>
+                    <button class="tab-btn" onclick="switchTab('colors')">🎨 Colors</button>
+                    <button class="tab-btn" onclick="switchTab('dimensions')">📐 Dimensions</button>
+                    <button class="tab-btn" onclick="switchTab('switches')">🔘 Switches</button>
+                </div>
+
+                <!-- Tab: General -->
+                <div class="tab-content active" id="tab-general">
+                    <div class="section-title">📝 Script Information</div>
+                    <div class="form-group">
+                        <label>Script Title</label>
+                        <input type="text" id="scriptTitle" value="⛩️ Script ⛩️" onchange="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Author / Subtitle</label>
+                        <input type="text" id="scriptAuthor" value="by @batmangamesS" onchange="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Close Button Text</label>
+                        <input type="text" id="closeBtnText" value="exit" onchange="updatePreview()">
+                    </div>
+
+                    <div class="section-divider"></div>
+                    <div class="section-title">🔤 Text Settings</div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>Title Size (sp)</label>
+                            <input type="number" id="titleSize" value="22" min="12" max="48" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtitle Size (sp)</label>
+                            <input type="number" id="subtitleSize" value="11" min="8" max="24" onchange="updatePreview()">
+                        </div>
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>Switch Label Size (sp)</label>
+                            <input type="number" id="switchLabelSize" value="14" min="10" max="24" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Button Text Size (sp)</label>
+                            <input type="number" id="btnTextSize" value="13" min="10" max="24" onchange="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Colors -->
+                <div class="tab-content" id="tab-colors">
+                    <div class="section-title">🎨 Layout Colors</div>
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="bgColor" value="#1a1a2e" onchange="updatePreview()">
+                            <input type="text" id="bgColorHex" value="#1a1a2e" onchange="updateColorFromHex('bgColor', 'bgColorHex')">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Card Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="cardColor" value="#16213e" onchange="updatePreview()">
+                            <input type="text" id="cardColorHex" value="#16213e" onchange="updateColorFromHex('cardColor', 'cardColorHex')">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Accent / Border Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="accentColor" value="#0f3460" onchange="updatePreview()">
+                            <input type="text" id="accentColorHex" value="#0f3460" onchange="updateColorFromHex('accentColor', 'accentColorHex')">
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+                    <div class="section-title">✏️ Text Colors</div>
+                    <div class="form-group">
+                        <label>Title Text Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="textColor" value="#e0e0e0" onchange="updatePreview()">
+                            <input type="text" id="textColorHex" value="#e0e0e0" onchange="updateColorFromHex('textColor', 'textColorHex')">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle Text Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="textSecondaryColor" value="#a0a0a0" onchange="updatePreview()">
+                            <input type="text" id="textSecondaryColorHex" value="#a0a0a0" onchange="updateColorFromHex('textSecondaryColor', 'textSecondaryColorHex')">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Switch Label Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="switchLabelColor" value="#e0e0e0" onchange="updatePreview()">
+                            <input type="text" id="switchLabelColorHex" value="#e0e0e0" onchange="updateColorFromHex('switchLabelColor', 'switchLabelColorHex')">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="btnTextColor" value="#e0e0e0" onchange="updatePreview()">
+                            <input type="text" id="btnTextColorHex" value="#e0e0e0" onchange="updateColorFromHex('btnTextColor', 'btnTextColorHex')">
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+                    <div class="section-title">🔘 Switch Colors</div>
+                    <div class="form-group">
+                        <label>Switch ON Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="switchOnColor" value="#34c759" onchange="updatePreview()">
+                            <input type="text" id="switchOnColorHex" value="#34c759" onchange="updateColorFromHex('switchOnColor', 'switchOnColorHex')">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Switch OFF Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="switchOffColor" value="#3a3a3c" onchange="updatePreview()">
+                            <input type="text" id="switchOffColorHex" value="#3a3a3c" onchange="updateColorFromHex('switchOffColor', 'switchOffColorHex')">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Switch Thumb Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="switchThumbColor" value="#ffffff" onchange="updatePreview()">
+                            <input type="text" id="switchThumbColorHex" value="#ffffff" onchange="updateColorFromHex('switchThumbColor', 'switchThumbColorHex')">
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+                    <div class="section-title">🎯 Button Colors</div>
+                    <div class="form-group">
+                        <label>Button Background Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="btnBgColor" value="#0f3460" onchange="updatePreview()">
+                            <input type="text" id="btnBgColorHex" value="#0f3460" onchange="updateColorFromHex('btnBgColor', 'btnBgColorHex')">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Dimensions -->
+                <div class="tab-content" id="tab-dimensions">
+                    <div class="section-title">📐 Layout Dimensions</div>
+                    <div class="form-group">
+                        <label>Layout Width (% of screen)</label>
+                        <input type="range" id="layoutWidth" min="40" max="100" value="85" oninput="updatePreview()">
+                        <small style="color: var(--text-secondary);" id="widthValue">85%</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Layout Height (% of screen)</label>
+                        <input type="range" id="layoutHeight" min="25" max="95" value="55" oninput="updatePreview()">
+                        <small style="color: var(--text-secondary);" id="heightValue">55%</small>
+                    </div>
+
+                    <div class="section-divider"></div>
+                    <div class="section-title">📏 Border & Corner Settings</div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>Border Radius (dp)</label>
+                            <input type="number" id="borderRadius" value="24" min="0" max="48" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Border Width (dp)</label>
+                            <input type="number" id="borderWidth" value="2" min="0" max="8" onchange="updatePreview()">
+                        </div>
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>Card Corner Radius (dp)</label>
+                            <input type="number" id="cardCornerRadius" value="16" min="0" max="48" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Button Corner Radius (dp)</label>
+                            <input type="number" id="btnCornerRadius" value="100" min="0" max="100" onchange="updatePreview()">
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+                    <div class="section-title">📦 Padding Settings</div>
+                    <div class="row-3">
+                        <div class="form-group">
+                            <label>Main Padding (dp)</label>
+                            <input type="number" id="mainPadding" value="20" min="0" max="48" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Card Padding (dp)</label>
+                            <input type="number" id="cardPadding" value="16" min="0" max="48" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Btn H Padding (dp)</label>
+                            <input type="number" id="btnPaddingH" value="32" min="8" max="64" onchange="updatePreview()">
+                        </div>
+                    </div>
+                    <div class="row-3">
+                        <div class="form-group">
+                            <label>Btn V Padding (dp)</label>
+                            <input type="number" id="btnPaddingV" value="12" min="4" max="32" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Title Bottom Margin (dp)</label>
+                            <input type="number" id="subtitleBottomMargin" value="20" min="0" max="48" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Button Top Margin (dp)</label>
+                            <input type="number" id="btnTopMargin" value="16" min="0" max="48" onchange="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Switches -->
+                <div class="tab-content" id="tab-switches">
+                    <div class="section-title">🔘 Switch Item Settings</div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>Switch Padding Left (dp)</label>
+                            <input type="number" id="switchPaddingLeft" value="12" min="0" max="32" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Switch Padding Right (dp)</label>
+                            <input type="number" id="switchPaddingRight" value="12" min="0" max="32" onchange="updatePreview()">
+                        </div>
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>Switch Padding Top (dp)</label>
+                            <input type="number" id="switchPaddingTop" value="8" min="0" max="32" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Switch Padding Bottom (dp)</label>
+                            <input type="number" id="switchPaddingBottom" value="8" min="0" max="32" onchange="updatePreview()">
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+                    <div class="section-title">📏 Switch Dimensions</div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>Switch Min Width (dp)</label>
+                            <input type="number" id="switchMinWidth" value="50" min="30" max="80" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Switch Padding (dp)</label>
+                            <input type="number" id="switchPadding" value="2" min="0" max="8" onchange="updatePreview()">
+                        </div>
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>Thumb Size (dp)</label>
+                            <input type="number" id="switchThumbSize" value="24" min="16" max="36" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Track Corner Radius (dp)</label>
+                            <input type="number" id="switchTrackRadius" value="14" min="4" max="24" onchange="updatePreview()">
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+                    <div class="section-title">📝 Switch Item Text Settings</div>
+                    <div class="form-group">
+                        <label>Switch Label Text Size (sp)</label>
+                        <input type="number" id="switchLabelSizeDetail" value="14" min="10" max="24" onchange="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Switch Label Color</label>
+                        <div class="color-input-group">
+                            <input type="color" id="switchLabelColorDetail" value="#e0e0e0" onchange="updatePreview()">
+                            <input type="text" id="switchLabelColorDetailHex" value="#e0e0e0" onchange="updateColorFromHex('switchLabelColorDetail', 'switchLabelColorDetailHex')">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Visual -->
+        <div class="preview-panel">
+            <div class="panel-header">
+                <span>👁️</span> Live Preview
+                       </div>
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-frame" id="previewFrame">
+                    <div class="preview-title" id="previewTitle">⛩️ Script ⛩️</div>
+                    <div class="preview-subtitle" id="previewSubtitle">by @batmangamesS</div>
+                    <div class="preview-card" id="previewCard">
+                        <!-- Switches serão inseridos aqui dinamicamente -->
+                    </div>
+                    <button class="preview-btn" id="previewCloseBtn">exit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Painel de Funções e Output -->
+        <div class="panel output-panel">
+            <div class="panel-header">
+                <span>🔧</span> Functions Manager
+            </div>
+            <div class="panel-body" style="display: flex; flex-direction: column;">
+                <!-- Lista de funções -->
+                <div style="padding: 12px; border-bottom: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 12px; font-weight: 700; color: var(--accent);">Functions</span>
+                        <span class="badge" id="funcCount">5</span>
+                    </div>
+                    <div id="functionsList" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Funções dinâmicas -->
+                    </div>
+                    <button class="btn" style="width: 100%; margin-top: 8px; font-size: 11px;" onclick="addFunction()">
+                        + Add New Function
+                    </button>
+                </div>
+                <!-- Output -->
+                <div style="padding: 12px; border-bottom: 1px solid var(--border);">
+                    <span style="font-size: 12px; font-weight: 700; color: var(--accent);">Generated Code</span>
+                </div>
+                <textarea id="outputCode" readonly spellcheck="false"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar/editar função -->
+    <div id="functionModal"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: 550px; max-width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 16px 48px rgba(0,0,0,0.5);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 18px;">✏️ Edit Function</h3>
+            <button class="btn btn-sm" onclick="closeFunctionModal()" style="font-size: 18px; padding: 4px 10px;">✕</button>
+        </div>
+        <div class="row-2">
+            <div class="form-group">
+                <label>Function Name (code)</label>
+                <input type="text" id="funcName" placeholder="e.g., god_mode">
+            </div>
+            <div class="form-group">
+                <label>Display Name (on Switch)</label>
+                <input type="text" id="funcDisplayName" placeholder="e.g., God Mode">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>ON Code (executed when switch is enabled)</label>
+            <textarea id="funcOnCode" rows="5"
+            placeholder="gg.searchNumber(...) ..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>OFF Code (executed when switch is disabled)</label>
+            <textarea id="funcOffCode" rows="5"
+            placeholder="gg.searchNumber(...) ..."></textarea>
+        </div>
+        <input type="hidden" id="funcEditIndex" value="-1">
+        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px;">
+            <button class="btn" onclick="closeFunctionModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveFunction()">💾 Save Function</button>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden file input for import -->
+<input type="file" id="importFile" style="display: none;" accept=".json" onchange="handleImport(event)">
+
+<script>
+    // Estado das funções
+    let functions = [
+        {
+            name: 'god_mode',
+            displayName: 'God Mode',
+            onCode: `gg.setRanges(gg.REGION_CODE_APP)
+gg.searchNumber("-0.50344371796;9.99999997e-7;-0.50291442871::9", gg.TYPE_FLOAT)
+gg.refineNumber("9.99999997e-7", gg.TYPE_FLOAT)
+gg.getResults(100)
+gg.editAll("-1", gg.TYPE_FLOAT)
+gg.clearResults()
+gg.toast(" HACK ACTIVATED")`,
+            offCode: `gg.setRanges(gg.REGION_CODE_APP)
+gg.searchNumber("-0.50344371796;9.99999997e-7;-0.50291442871::9", gg.TYPE_FLOAT)
+gg.refineNumber("9.99999997e-7", gg.TYPE_FLOAT)
+gg.getResults(100)
+gg.editAll("-1", gg.TYPE_FLOAT)
+gg.clearResults()
+gg.toast(" HACK DESACTIVATED")`
+        },
+        {
+            name: 'infinite_ammo',
+            displayName: 'Infinite Ammo',
+            onCode: `gg.setRanges(gg.REGION_CODE_APP)
+gg.searchNumber("-0.50344371796;9.99999997e-7;-0.50291442871::9", gg.TYPE_FLOAT)
+gg.refineNumber("9.99999997e-7", gg.TYPE_FLOAT)
+gg.getResults(100)
+gg.editAll("-1", gg.TYPE_FLOAT)
+gg.clearResults()
+gg.toast(" HACK ACTIVATED")`,
+            offCode: `gg.setRanges(gg.REGION_CODE_APP)
+gg.searchNumber("-0.50344371796;9.99999997e-7;-0.50291442871::9", gg.TYPE_FLOAT)
+gg.refineNumber("9.99999997e-7", gg.TYPE_FLOAT)
+gg.getResults(100)
+gg.editAll("-1", gg.TYPE_FLOAT)
+gg.clearResults()
+gg.toast(" HACK DESACTIVATED")`
+        },
+        {
+            name: 'speed_hack',
+            displayName: 'Speed Hack',
+            onCode: `gg.setRanges(gg.REGION_CODE_APP)
+gg.searchNumber("-0.50344371796;9.99999997e-7;-0.50291442871::9", gg.TYPE_FLOAT)
+gg.refineNumber("9.99999997e-7", gg.TYPE_FLOAT)
+gg.getResults(100)
+gg.editAll("-1", gg.TYPE_FLOAT)
+gg.clearResults()
+gg.toast(" HACK ACTIVATED")`,
+            offCode: `gg.setRanges(gg.REGION_CODE_APP)
+gg.searchNumber("-0.50344371796;9.99999997e-7;-0.50291442871::9", gg.TYPE_FLOAT)
+gg.refineNumber("9.99999997e-7", gg.TYPE_FLOAT)
+gg.getResults(100)
+gg.editAll("-1", gg.TYPE_FLOAT)
+gg.clearResults()
+gg.toast(" HACK DESACTIVATED")`
+        },
+        {
+            name: 'wall_hack',
+            displayName: 'Wall Hack',
+            onCode: `gg.setRanges(gg.REGION_CODE_APP)
+gg.searchNumber("-0.50344371796;9.99999997e-7;-0.50291442871::9", gg.TYPE_FLOAT)
+gg.refineNumber("9.99999997e-7", gg.TYPE_FLOAT)
+gg.getResults(100)
+gg.editAll("-1", gg.TYPE_FLOAT)
+gg.clearResults()
+gg.toast(" HACK ACTIVATED")`,
+            offCode: `gg.setRanges(gg.REGION_CODE_APP)
+gg.searchNumber("-0.50344371796;9.99999997e-7;-0.50291442871::9", gg.TYPE_FLOAT)
+gg.refineNumber("9.99999997e-7", gg.TYPE_FLOAT)
+gg.getResults(100)
+gg.editAll("-1", gg.TYPE_FLOAT)
+gg.clearResults()
+gg.toast(" HACK DESACTIVATED")`
+        },
+        {
+            name: 'esp_radar',
+            displayName: 'ESP / Radar',
+            onCode: `gg.setRanges(gg.REGION_CODE_APP)
+gg.searchNumber("-0.50344371796;9.99999997e-7;-0.50291442871::9", gg.TYPE_FLOAT)
+gg.refineNumber("9.99999997e-7", gg.TYPE_FLOAT)
+gg.getResults(100)
+gg.editAll("-1", gg.TYPE_FLOAT)
+gg.clearResults()
+gg.toast(" HACK ACTIVATED")`,
+            offCode: `gg.setRanges(gg.REGION_CODE_APP)
+gg.searchNumber("-0.50344371796;9.99999997e-7;-0.50291442871::9", gg.TYPE_FLOAT)
+gg.refineNumber("9.99999997e-7", gg.TYPE_FLOAT)
+gg.getResults(100)
+gg.editAll("-1", gg.TYPE_FLOAT)
+gg.clearResults()
+gg.toast(" HACK DESACTIVATED")`
+        }
+    ];
+
+    // Tab switching
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelector(`.tab-btn[onclick="switchTab('${tabName}')"]`)?.classList.add('active');
+        document.getElementById('tab-' + tabName)?.classList.add('active');
+    }
+
+    function updateColorFromHex(colorId, hexId) {
+        const hex = document.getElementById(hexId).value;
+        if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+            document.getElementById(colorId).value = hex;
+            updatePreview();
+        }
+    }
+
+    function updatePreview() {
+        // Cores
+        const bgColor = document.getElementById('bgColor').value;
+        const cardColor = document.getElementById('cardColor').value;
+        const accentColor = document.getElementById('accentColor').value;
+        const textColor = document.getElementById('textColor').value;
+        const textSecondaryColor = document.getElementById('textSecondaryColor').value;
+        const switchOnColor = document.getElementById('switchOnColor').value;
+        const switchOffColor = document.getElementById('switchOffColor').value;
+        const switchThumbColor = document.getElementById('switchThumbColor').value;
+        const btnBgColor = document.getElementById('btnBgColor').value;
+        const btnTextColor = document.getElementById('btnTextColor').value;
+        const switchLabelColor = document.getElementById('switchLabelColor').value || textColor;
+
+        // Dimensões
+        const layoutWidth = document.getElementById('layoutWidth').value;
+        const layoutHeight = document.getElementById('layoutHeight').value;
+        const borderRadius = document.getElementById('borderRadius').value;
+        const borderWidth = document.getElementById('borderWidth').value;
+        const cardCornerRadius = document.getElementById('cardCornerRadius').value;
+        const btnCornerRadius = document.getElementById('btnCornerRadius').value;
+        const mainPadding = document.getElementById('mainPadding').value;
+        const cardPadding = document.getElementById('cardPadding').value;
+        const btnPaddingH = document.getElementById('btnPaddingH').value;
+        const btnPaddingV = document.getElementById('btnPaddingV').value;
+        const subtitleBottomMargin = document.getElementById('subtitleBottomMargin').value;
+        const btnTopMargin = document.getElementById('btnTopMargin').value;
+
+        // Textos
+        const scriptTitle = document.getElementById('scriptTitle').value;
+        const scriptAuthor = document.getElementById('scriptAuthor').value;
+        const closeBtnText = document.getElementById('closeBtnText').value;
+        const titleSize = document.getElementById('titleSize').value;
+        const subtitleSize = document.getElementById('subtitleSize').value;
+        const switchLabelSize = document.getElementById('switchLabelSize').value;
+        const btnTextSize = document.getElementById('btnTextSize').value;
+
+        // Switch settings
+        const switchPaddingLeft = document.getElementById('switchPaddingLeft').value;
+        const switchPaddingRight = document.getElementById('switchPaddingRight').value;
+        const switchPaddingTop = document.getElementById('switchPaddingTop').value;
+        const switchPaddingBottom = document.getElementById('switchPaddingBottom').value;
+        const switchMinWidth = document.getElementById('switchMinWidth').value;
+        const switchPadding = document.getElementById('switchPadding').value;
+        const switchThumbSize = document.getElementById('switchThumbSize').value;
+        const switchTrackRadius = document.getElementById('switchTrackRadius').value;
+
+        // Sync color hex inputs
+        document.getElementById('bgColorHex').value = bgColor;
+        document.getElementById('cardColorHex').value = cardColor;
+        document.getElementById('accentColorHex').value = accentColor;
+        document.getElementById('textColorHex').value = textColor;
+        document.getElementById('textSecondaryColorHex').value = textSecondaryColor;
+        document.getElementById('switchOnColorHex').value = switchOnColor;
+        document.getElementById('switchOffColorHex').value = switchOffColor;
+        document.getElementById('switchThumbColorHex').value = switchThumbColor;
+        document.getElementById('btnBgColorHex').value = btnBgColor;
+        document.getElementById('btnTextColorHex').value = btnTextColor;
+        document.getElementById('switchLabelColorHex').value = switchLabelColor;
+
+        // Update value displays
+        document.getElementById('widthValue').textContent = layoutWidth + '%';
+        document.getElementById('heightValue').textContent = layoutHeight + '%';
+
+        // Update preview frame
+        const frame = document.getElementById('previewFrame');
+        frame.style.background = bgColor;
+        frame.style.borderRadius = borderRadius + 'px';
+        frame.style.border = borderWidth + 'px solid ' + accentColor;
+        frame.style.width = layoutWidth + '%';
+        frame.style.height = layoutHeight + '%';
+        frame.style.padding = mainPadding + 'px';
+
+        // Title
+        const titleEl = document.getElementById('previewTitle');
+        titleEl.textContent = scriptTitle;
+        titleEl.style.color = textColor;
+        titleEl.style.fontSize = titleSize + 'px';
+
+        // Subtitle
+        const subtitleEl = document.getElementById('previewSubtitle');
+        subtitleEl.textContent = scriptAuthor;
+        subtitleEl.style.color = textSecondaryColor;
+        subtitleEl.style.fontSize = subtitleSize + 'px';
+        subtitleEl.style.marginBottom = subtitleBottomMargin + 'px';
+
+        // Card
+        const previewCard = document.getElementById('previewCard');
+        previewCard.style.background = cardColor;
+        previewCard.style.borderRadius = cardCornerRadius + 'px';
+        previewCard.style.padding = cardPadding + 'px';
+
+        // Switches
+        previewCard.innerHTML = '';
+        functions.forEach((func, index) => {
+            const switchItem = document.createElement('div');
+            switchItem.className = 'preview-switch-item';
+            switchItem.style.color = switchLabelColor;
+            switchItem.style.padding = `${switchPaddingTop}px ${switchPaddingRight}px ${switchPaddingBottom}px ${switchPaddingLeft}px`;
+            switchItem.style.fontSize = switchLabelSize + 'px';
+            switchItem.innerHTML = `
+                <span>${func.displayName}</span>
+                <div class="preview-switch-track" id="previewSwitch${index}" 
+                     onclick="togglePreviewSwitch(${index})"
+                     style="min-width: ${switchMinWidth}px; height: ${switchThumbSize}px; border-radius: ${switchTrackRadius}px; background: ${switchOffColor};">
+                    <div class="preview-switch-thumb" 
+                         style="width: ${switchThumbSize - 4}px; height: ${switchThumbSize - 4}px; background: ${switchThumbColor}; top: 2px;"></div>
+                </div>
+            `;
+            previewCard.appendChild(switchItem);
+        });
+
+        // Close button
+        const closeBtn = document.getElementById('previewCloseBtn');
+        closeBtn.textContent = closeBtnText;
+        closeBtn.style.background = btnBgColor;
+        closeBtn.style.color = btnTextColor;
+        closeBtn.style.borderRadius = btnCornerRadius + 'px';
+        closeBtn.style.fontSize = btnTextSize + 'px';
+        closeBtn.style.padding = `${btnPaddingV}px ${btnPaddingH}px`;
+        closeBtn.style.marginTop = btnTopMargin + 'px';
+
+        // Update functions count
+        document.getElementById('funcCount').textContent = functions.length;
+        document.getElementById('funcCount').className = functions.length > 5 ? 'badge badge-warning' : 'badge badge-success';
+
+        // Update functions list and code
+        renderFunctionsList();
+        generateCode();
+    }
+
+    function togglePreviewSwitch(index) {
+        const track = document.getElementById('previewSwitch' + index);
+        if (track) {
+            const switchOnColor = document.getElementById('switchOnColor').value;
+            const switchOffColor = document.getElementById('switchOffColor').value;
+            track.classList.toggle('active');
+            if (track.classList.contains('active')) {
+                track.style.background = switchOnColor;
+                track.style.boxShadow = '0 0 12px ' + switchOnColor + '66';
+            } else {
+                track.style.background = switchOffColor;
+                track.style.boxShadow = 'none';
+            }
+        }
+    }
+
+    function renderFunctionsList() {
+        const list = document.getElementById('functionsList');
+        list.innerHTML = functions.map((func, index) => `
+            <div class="function-item">
+                <div class="func-header">
+                    <span class="func-name">
+                        <span style="font-size: 16px;">🔘</span> 
+                        ${func.displayName}
+                    </span>
+                    <span class="badge">${func.name}</span>
+                </div>
+                <div style="display: flex; gap: 4px; margin-top: 4px;">
+                    <button class="btn btn-sm" onclick="editFunction(${index})">✏️ Edit</button>
+                    <button class="btn btn-sm" onclick="duplicateFunction(${index})">📋 Duplicate</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteFunction(${index})">🗑️ Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addFunction() {
+        document.getElementById('funcName').value = '';
+        document.getElementById('funcDisplayName').value = '';
+        document.getElementById('funcOnCode').value = '';
+        document.getElementById('funcOffCode').value = '';
+        document.getElementById('funcEditIndex').value = '-1';
+        document.getElementById('functionModal').style.display = 'flex';
+        document.getElementById('funcName').focus();
+    }
+
+    function editFunction(index) {
+        const func = functions[index];
+        document.getElementById('funcName').value = func.name;
+        document.getElementById('funcDisplayName').value = func.displayName;
+        document.getElementById('funcOnCode').value = func.onCode;
+        document.getElementById('funcOffCode').value = func.offCode;
+        document.getElementById('funcEditIndex').value = index;
+        document.getElementById('functionModal').style.display = 'flex';
+        document.getElementById('funcName').focus();
+    }
+
+    function duplicateFunction(index) {
+        const func = functions[index];
+        const newFunc = { ...func };
+        newFunc.name = func.name + '_copy';
+        newFunc.displayName = func.displayName + ' (Copy)';
+        newFunc.onCode = func.onCode;
+        newFunc.offCode = func.offCode;
+        functions.splice(index + 1, 0, newFunc);
+        updatePreview();
+        showToast('📋 Function duplicated!');
+    }
+
+    function closeFunctionModal() {
+        document.getElementById('functionModal').style.display = 'none';
+    }
+
+    function saveFunction() {
+        const name = document.getElementById('funcName').value.trim();
+        const displayName = document.getElementById('funcDisplayName').value.trim();
+        const onCode = document.getElementById('funcOnCode').value;
+        const offCode = document.getElementById('funcOffCode').value;
+        const index = parseInt(document.getElementById('funcEditIndex').value);
+
+        if (!name || !displayName) {
+            showToast('⚠️ Function name and display name are required!');
+            return;
+        }
+
+        const funcData = {
+            name: name.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase(),
+            displayName: displayName,
+            onCode: onCode,
+            offCode: offCode
+        };
+
+        if (index >= 0 && index < functions.length) {
+            functions[index] = funcData;
+        } else {
+            functions.push(funcData);
+        }
+
+        closeFunctionModal();
+        updatePreview();
+        showToast('✅ Function saved!');
+    }
+
+    function deleteFunction(index) {
+        if (functions.length <= 1) {
+            showToast('⚠️ You must have at least one function!');
+            return;
+        }
+        if (confirm('Delete function "' + functions[index].displayName + '"?')) {
+            functions.splice(index, 1);
+            updatePreview();
+            showToast('🗑️ Function deleted!');
+        }
+    }
+
+    function generateCode() {
+        const scriptTitle = document.getElementById('scriptTitle').value;
+        const scriptAuthor = document.getElementById('scriptAuthor').value;
+        const closeBtnText = document.getElementById('closeBtnText').value;
+        const bgColor = document.getElementById('bgColor').value;
+        const cardColor = document.getElementById('cardColor').value;
+        const accentColor = document.getElementById('accentColor').value;
+        const textColor = document.getElementById('textColor').value;
+        const textSecondaryColor = document.getElementById('textSecondaryColor').value;
+        const switchOnColor = document.getElementById('switchOnColor').value;
+        const switchOffColor = document.getElementById('switchOffColor').value;
+        const switchThumbColor = document.getElementById('switchThumbColor').value;
+        const btnBgColor = document.getElementById('btnBgColor').value;
+        const btnTextColor = document.getElementById('btnTextColor').value;
+        const switchLabelColor = document.getElementById('switchLabelColor').value || textColor;
+        const layoutWidth = document.getElementById('layoutWidth').value;
+        const layoutHeight = document.getElementById('layoutHeight').value;
+        const borderRadius = document.getElementById('borderRadius').value;
+        const borderWidth = document.getElementById('borderWidth').value;
+        const cardCornerRadius = document.getElementById('cardCornerRadius').value;
+        const btnCornerRadius = document.getElementById('btnCornerRadius').value;
+        const mainPadding = document.getElementById('mainPadding').value;
+        const cardPadding = document.getElementById('cardPadding').value;
+        const btnPaddingH = document.getElementById('btnPaddingH').value;
+        const btnPaddingV = document.getElementById('btnPaddingV').value;
+        const subtitleBottomMargin = document.getElementById('subtitleBottomMargin').value;
+        const btnTopMargin = document.getElementById('btnTopMargin').value;
+        const titleSize = document.getElementById('titleSize').value;
+        const subtitleSize = document.getElementById('subtitleSize').value;
+        const switchLabelSize = document.getElementById('switchLabelSize').value;
+        const btnTextSize = document.getElementById('btnTextSize').value;
+        const switchPaddingLeft = document.getElementById('switchPaddingLeft').value;
+        const switchPaddingRight = document.getElementById('switchPaddingRight').value;
+        const switchPaddingTop = document.getElementById('switchPaddingTop').value;
+        const switchPaddingBottom = document.getElementById('switchPaddingBottom').value;
+        const switchMinWidth = document.getElementById('switchMinWidth').value;
+        const switchPadding = document.getElementById('switchPadding').value;
+        const switchThumbSize = document.getElementById('switchThumbSize').value;
+        const switchTrackRadius = document.getElementById('switchTrackRadius').value;
+
+        // Gerar funções Lua
+        let functionsCode = '';
+        functions.forEach(func => {
+            functionsCode += `
+function ${func.name}_on()
+    ${func.onCode.split('\n').map(l => '    ' + l).join('\n')}
+end
+
+function ${func.name}_off()
+    ${func.offCode.split('\n').map(l => '    ' + l).join('\n')}
+end
+`;
+        });
+
+        // Gerar código das switches
+        let switchesCode = '';
+        functions.forEach(func => {
+            switchesCode += `
+    createSwitch(card, "${func.displayName.replace(/"/g, '\\"')}",
+        function() 
+            thread(${func.name}_on)
+        end,
+        function() 
+            thread(${func.name}_off)
+        end
+    )
+`;
+        });
+
+        const fullCode = `if not luajava then
+    print("LuaJava NOT Available!")
+    return
+end
+
+if not activity then
+    print("No activity available")
+    return
+end
+
+gg.setVisible(false)
+
+local Color = luajava.bindClass("android.graphics.Color")
+local Context = luajava.bindClass("android.content.Context")
+local Typeface = luajava.bindClass("android.graphics.Typeface")
+local GradientDrawable = luajava.bindClass("android.graphics.drawable.GradientDrawable")
+local Build = luajava.bindClass("android.os.Build")
+local TypedValue = luajava.bindClass("android.util.TypedValue")
+local Gravity = luajava.bindClass("android.view.Gravity")
+local View = luajava.bindClass("android.view.View")
+local ViewGroup = luajava.bindClass("android.view.ViewGroup")
+local WindowManager = luajava.bindClass("android.view.WindowManager")
+local LayoutParams = luajava.bindClass("android.view.WindowManager$LayoutParams")
+local LinearLayout = luajava.bindClass("android.widget.LinearLayout")
+local LinLayoutParams = luajava.bindClass("android.widget.LinearLayout$LayoutParams")
+local FrameLayout = luajava.bindClass("android.widget.FrameLayout")
+local FrameLayoutParams = luajava.bindClass("android.widget.FrameLayout$LayoutParams")
+local TextView = luajava.bindClass("android.widget.TextView")
+local Button = luajava.bindClass("android.widget.Button")
+local Switch = luajava.bindClass("android.widget.Switch")
+local Point = luajava.bindClass("android.graphics.Point")
+local CompoundButton = luajava.bindClass("android.widget.CompoundButton")
+local MotionEvent = luajava.bindClass("android.view.MotionEvent")
+
+local BG_COLOR = Color.parseColor("${bgColor}")
+local CARD_COLOR = Color.parseColor("${cardColor}")
+local ACCENT_COLOR = Color.parseColor("${accentColor}")
+local TITLE_COLOR = Color.parseColor("${textColor}")
+local SUBTITLE_COLOR = Color.parseColor("${textSecondaryColor}")
+local SWITCH_LABEL_COLOR = Color.parseColor("${switchLabelColor}")
+local SWITCH_ON_COLOR = Color.parseColor("${switchOnColor}")
+local SWITCH_OFF_COLOR = Color.parseColor("${switchOffColor}")
+local SWITCH_THUMB_COLOR = Color.parseColor("${switchThumbColor}")
+local BTN_BG_COLOR = Color.parseColor("${btnBgColor}")
+local BTN_TEXT_COLOR = Color.parseColor("${btnTextColor}")
+
+${functionsCode}
+local function dp(v)
+    return math.floor(
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            v,
+            activity.getResources().getDisplayMetrics()
+        )
+    )
+end
+
+local function getFbl()
+    local wm = activity.getSystemService(Context.WINDOW_SERVICE)
+    local point = Point()
+    wm.getDefaultDisplay().getRealSize(point)
+    return { width = point.x, height = point.y }
+end
+
+local function createSwitch(parent, label, onEnable, onDisable)
+    local container = LinearLayout(activity)
+    container.setOrientation(LinearLayout.HORIZONTAL)
+    container.setGravity(Gravity.CENTER_VERTICAL)
+    container.setPadding(dp(${switchPaddingLeft}), dp(${switchPaddingTop}), dp(${switchPaddingRight}), dp(${switchPaddingBottom}))
+
+    local text = TextView(activity)
+    text.setText(label)
+    text.setTextColor(SWITCH_LABEL_COLOR)
+    text.setTextSize(1, ${switchLabelSize})
+    text.setLayoutParams(
+        LinLayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0)
+    )
+
+    local switchBtn = Switch(activity)
+    switchBtn.setChecked(false)
+    switchBtn.setText("")
+    switchBtn.setTextOn("")
+    switchBtn.setTextOff("")
+    switchBtn.setSwitchMinWidth(dp(${switchMinWidth}))
+    switchBtn.setSwitchPadding(dp(${switchPadding}))
+
+    local thumbDrawable = GradientDrawable()
+    thumbDrawable.setShape(GradientDrawable.OVAL)
+    thumbDrawable.setColor(SWITCH_THUMB_COLOR)
+    thumbDrawable.setSize(dp(${switchThumbSize}), dp(${switchThumbSize}))
+    switchBtn.setThumbDrawable(thumbDrawable)
+
+    local trackDrawable = GradientDrawable()
+    trackDrawable.setShape(GradientDrawable.RECTANGLE)
+    trackDrawable.setCornerRadius(dp(${switchTrackRadius}))
+    trackDrawable.setColor(SWITCH_OFF_COLOR)
+    switchBtn.setTrackDrawable(trackDrawable)
+
+    switchBtn.setOnCheckedChangeListener(
+        luajava.createProxy(
+            "android.widget.CompoundButton$OnCheckedChangeListener",
+            {
+                onCheckedChanged = function(buttonView, isChecked)
+                    local thumb = GradientDrawable()
+                    thumb.setShape(GradientDrawable.OVAL)
+                    thumb.setColor(SWITCH_THUMB_COLOR)
+                    thumb.setSize(dp(${switchThumbSize}), dp(${switchThumbSize}))
+                    buttonView.setThumbDrawable(thumb)
+
+                    local track = GradientDrawable()
+                    track.setShape(GradientDrawable.RECTANGLE)
+                    track.setCornerRadius(dp(${switchTrackRadius}))
+
+                    if isChecked then
+                        track.setColor(SWITCH_ON_COLOR)
+                        buttonView.setTrackDrawable(track)
+                        if onEnable then
+                            pcall(onEnable)
+                        end
+                    else
+                        track.setColor(SWITCH_OFF_COLOR)
+                        buttonView.setTrackDrawable(track)
+                        if onDisable then
+                            pcall(onDisable)
+                        end
+                    end
+                end
+            }
+        )
+    )
+
+    container.addView(text)
+    container.addView(switchBtn)
+    parent.addView(container)
+    return switchBtn
+end
+
+local function createLayout(layoutWidth, layoutHeight)
+    local root = FrameLayout(activity)
+    root.setLayoutParams(FrameLayoutParams(layoutWidth, layoutHeight))
+
+    local main = LinearLayout(activity)
+    main.setOrientation(LinearLayout.VERTICAL)
+    main.setPadding(dp(${mainPadding}), dp(${mainPadding}), dp(${mainPadding}), dp(${mainPadding}))
+    main.setGravity(Gravity.CENTER_HORIZONTAL)
+
+    local bgDrawable = GradientDrawable()
+    bgDrawable.setColor(BG_COLOR)
+    bgDrawable.setCornerRadius(dp(${borderRadius}))
+    bgDrawable.setStroke(dp(${borderWidth}), ACCENT_COLOR)
+    main.setBackground(bgDrawable)
+
+    main.setLayoutParams(
+        FrameLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+    )
+
+    local title = TextView(activity)
+    title.setText("${scriptTitle.replace(/"/g, '\\"')}")
+    title.setTextColor(TITLE_COLOR)
+    title.setTextSize(1, ${titleSize})
+    title.setTypeface(Typeface.DEFAULT_BOLD)
+    title.setGravity(Gravity.CENTER)
+    title.setLayoutParams(
+        LinLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+    )
+    main.addView(title)
+
+    local subtitle = TextView(activity)
+    subtitle.setText("${scriptAuthor.replace(/"/g, '\\"')}")
+    subtitle.setTextColor(SUBTITLE_COLOR)
+    subtitle.setTextSize(1, ${subtitleSize})
+    subtitle.setGravity(Gravity.CENTER)
+    subtitle.setPadding(0, dp(4), 0, dp(${subtitleBottomMargin}))
+    main.addView(subtitle)
+
+    local card = LinearLayout(activity)
+    card.setOrientation(LinearLayout.VERTICAL)
+    card.setPadding(dp(${cardPadding}), dp(${cardPadding}), dp(${cardPadding}), dp(${cardPadding}))
+
+    local cardDrawable = GradientDrawable()
+    cardDrawable.setColor(CARD_COLOR)
+    cardDrawable.setCornerRadius(dp(${cardCornerRadius}))
+    card.setBackground(cardDrawable)
+
+    card.setLayoutParams(
+        LinLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0)
+    )
+
+${switchesCode}
+    main.addView(card)
+
+    local closeBtn = Button(activity)
+    closeBtn.setText("${closeBtnText.replace(/"/g, '\\"')}")
+    closeBtn.setAllCaps(false)
+    closeBtn.setTextColor(BTN_TEXT_COLOR)
+    closeBtn.setTextSize(1, ${btnTextSize})
+    closeBtn.setTypeface(Typeface.DEFAULT_BOLD)
+    closeBtn.setPadding(dp(${btnPaddingH}), dp(${btnPaddingV}), dp(${btnPaddingH}), dp(${btnPaddingV}))
+
+    local btnDrawable = GradientDrawable()
+    btnDrawable.setColor(BTN_BG_COLOR)
+    btnDrawable.setCornerRadius(dp(${btnCornerRadius}))
+    closeBtn.setBackground(btnDrawable)
+
+    local btnParams = LinLayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+    )
+    btnParams.topMargin = dp(${btnTopMargin})
+    closeBtn.setLayoutParams(btnParams)
+
+    main.addView(closeBtn)
+    root.addView(main)
+
+    return root, closeBtn
+end
+
+local wm = activity.getSystemService(Context.WINDOW_SERVICE)
+local screen = getFbl()
+local screenWidth = screen.width
+local screenHeight = screen.height
+
+local layoutWidth = math.floor(screenWidth * ${layoutWidth / 100})
+local layoutHeight = math.floor(screenHeight * ${layoutHeight / 100})
+
+local layoutType
+if Build.VERSION.SDK_INT >= 26 then
+    layoutType = LayoutParams.TYPE_APPLICATION_OVERLAY
+else
+    layoutType = LayoutParams.TYPE_PHONE
+end
+
+local params = LayoutParams(
+    layoutWidth, layoutHeight, layoutType,
+    LayoutParams.FLAG_NOT_FOCUSABLE,
+    -3
+)
+params.gravity = Gravity.CENTER
+
+local layout, closeBtn = createLayout(layoutWidth, layoutHeight)
+
+local initialX = 0
+local initialY = 0
+local initialTouchX = 0
+local initialTouchY = 0
+local isMoving = false
+
+local function onTouch(v, event)
+    local action = event.getAction()
+    
+    if action == MotionEvent.ACTION_DOWN then
+        initialX = params.x
+        initialY = params.y
+        initialTouchX = event.getRawX()
+        initialTouchY = event.getRawY()
+        isMoving = false
+        return true
+    elseif action == MotionEvent.ACTION_MOVE then
+        local deltaX = event.getRawX() - initialTouchX
+        local deltaY = event.getRawY() - initialTouchY
+        
+        if math.abs(deltaX) > 10 or math.abs(deltaY) > 10 then
+            isMoving = true
+        end
+        
+        if isMoving then
+            params.x = initialX + deltaX
+            params.y = initialY + deltaY
+            pcall(function()
+                wm.updateViewLayout(layout, params)
+            end)
+        end
+        
+        return true
+    elseif action == MotionEvent.ACTION_UP then
+        return isMoving
+    end
+    
+    return false
+end
+
+activity.runOnUiThread(
+    luajava.createProxy(
+        "java.lang.Runnable",
+        {
+            run = function()
+                layout.setOnTouchListener(
+                    luajava.createProxy(
+                        "android.view.View$OnTouchListener",
+                        {
+                            onTouch = onTouch
+                        }
+                    )
+                )
+                
+                closeBtn.setOnClickListener(
+                    luajava.createProxy(
+                        "android.view.View$OnClickListener",
+                        {
+                            onClick = function()
+                                pcall(function()
+                                    wm.removeView(layout)
+                                end)
+                            end
+                        }
+                    )
+                )
+
+                pcall(function()
+                    wm.addView(layout, params)
+                end)
+            end
+        }
+    )
+)`;
+
+        document.getElementById('outputCode').value = fullCode;
+    }
+
+    function copyCode() {
+        const code = document.getElementById('outputCode').value;
+        navigator.clipboard.writeText(code).then(() => {
+            showToast('📋 Code copied to clipboard!');
+        }).catch(() => {
+            const textarea = document.getElementById('outputCode');
+            textarea.select();
+            document.execCommand('copy');
+            showToast('📋 Code copied to clipboard!');
+        });
+    }
+
+    function downloadScript() {
+        const code = document.getElementById('outputCode').value;
+        const scriptTitle = document.getElementById('scriptTitle').value || 'script';
+        const filename = scriptTitle.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() + '.lua';
+        const blob = new Blob([code], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('💾 Downloaded: ' + filename);
+    }
+
+    function resetAll() {
+        if (confirm('Reset all settings to default? This cannot be undone.')) {
+            location.reload();
+        }
+    }
+
+    function exportSettings() {
+        const settings = {
+            scriptTitle: document.getElementById('scriptTitle').value,
+            scriptAuthor: document.getElementById('scriptAuthor').value,
+            closeBtnText: document.getElementById('closeBtnText').value,
+            bgColor: document.getElementById('bgColor').value,
+            cardColor: document.getElementById('cardColor').value,
+            accentColor: document.getElementById('accentColor').value,
+            textColor: document.getElementById('textColor').value,
+            textSecondaryColor: document.getElementById('textSecondaryColor').value,
+            switchOnColor: document.getElementById('switchOnColor').value,
+            switchOffColor: document.getElementById('switchOffColor').value,
+            switchThumbColor: document.getElementById('switchThumbColor').value,
+            btnBgColor: document.getElementById('btnBgColor').value,
+            btnTextColor: document.getElementById('btnTextColor').value,
+            switchLabelColor: document.getElementById('switchLabelColor').value,
+            layoutWidth: document.getElementById('layoutWidth').value,
+            layoutHeight: document.getElementById('layoutHeight').value,
+            borderRadius: document.getElementById('borderRadius').value,
+            borderWidth: document.getElementById('borderWidth').value,
+            cardCornerRadius: document.getElementById('cardCornerRadius').value,
+            btnCornerRadius: document.getElementById('btnCornerRadius').value,
+            mainPadding: document.getElementById('mainPadding').value,
+            cardPadding: document.getElementById('cardPadding').value,
+            btnPaddingH: document.getElementById('btnPaddingH').value,
+            btnPaddingV: document.getElementById('btnPaddingV').value,
+            subtitleBottomMargin: document.getElementById('subtitleBottomMargin').value,
+            btnTopMargin: document.getElementById('btnTopMargin').value,
+            titleSize: document.getElementById('titleSize').value,
+            subtitleSize: document.getElementById('subtitleSize').value,
+            switchLabelSize: document.getElementById('switchLabelSize').value,
+            btnTextSize: document.getElementById('btnTextSize').value,
+            switchPaddingLeft: document.getElementById('switchPaddingLeft').value,
+            switchPaddingRight: document.getElementById('switchPaddingRight').value,
+            switchPaddingTop: document.getElementById('switchPaddingTop').value,
+            switchPaddingBottom: document.getElementById('switchPaddingBottom').value,
+            switchMinWidth: document.getElementById('switchMinWidth').value,
+            switchPadding: document.getElementById('switchPadding').value,
+            switchThumbSize: document.getElementById('switchThumbSize').value,
+            switchTrackRadius: document.getElementById('switchTrackRadius').value,
+            functions: functions
+        };
+
+        const json = JSON.stringify(settings, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'lua-layout-settings.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('📤 Settings exported!');
+    }
+
+    function importSettings() {
+        document.getElementById('importFile').click();
+    }
+
+    function handleImport(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const settings = JSON.parse(e.target.result);
+
+                // Restore all settings
+                const fields = [
+                    'scriptTitle', 'scriptAuthor', 'closeBtnText',
+                    'bgColor', 'cardColor', 'accentColor', 'textColor', 'textSecondaryColor',
+                    'switchOnColor', 'switchOffColor', 'switchThumbColor', 'btnBgColor',
+                    'btnTextColor', 'switchLabelColor',
+                    'layoutWidth', 'layoutHeight', 'borderRadius', 'borderWidth',
+                    'cardCornerRadius', 'btnCornerRadius', 'mainPadding', 'cardPadding',
+                    'btnPaddingH', 'btnPaddingV', 'subtitleBottomMargin', 'btnTopMargin',
+                    'titleSize', 'subtitleSize', 'switchLabelSize', 'btnTextSize',
+                    'switchPaddingLeft', 'switchPaddingRight', 'switchPaddingTop', 'switchPaddingBottom',
+                    'switchMinWidth', 'switchPadding', 'switchThumbSize', 'switchTrackRadius'
+                ];
+
+                fields.forEach(field => {
+                    if (settings[field] !== undefined) {
+                        document.getElementById(field).value = settings[field];
+                    }
+                });
+
+                if (settings.functions && Array.isArray(settings.functions)) {
+                    functions = settings.functions;
+                }
+
+                updatePreview();
+                showToast('📥 Settings imported successfully!');
+            } catch (err) {
+                showToast('❌ Error importing settings!');
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    function showToast(message) {
+        const existingToast = document.querySelector('.toast');
+        if (existingToast) existingToast.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            if (toast.parentNode) toast.remove();
+        }, 2000);
+    }
+
+    // Fechar modal ao clicar fora
+    document.getElementById('functionModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeFunctionModal();
+        }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+            if (e.key === 's') {
+                e.preventDefault();
+                downloadScript();
+            } else if (e.key === 'c' && !e.target.closest('input, textarea')) {
+                e.preventDefault();
+                copyCode();
+            }
+        }
+        if (e.key === 'Escape') {
+            closeFunctionModal();
+        }
+    });
+
+    // Inicializar
+    updatePreview();
+    renderFunctionsList();
+    generateCode();
+</script>
+</body>
+</html>
